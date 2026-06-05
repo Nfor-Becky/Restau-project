@@ -1,1 +1,25 @@
 @import "tailwindcss";
+
+.auth-input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  background: white;
+  border: 1px solid #d1d5db;
+  outline: none;
+  color: #064e3b;
+  font-size: 15px;
+}
+
+.auth-input:focus {
+  border-color: #064e3b;
+  box-shadow: 0 0 0 3px rgba(6, 78, 59, 0.15);
+}
+
+/* Mobile improvements */
+@media (max-width: 480px) {
+  .auth-input {
+    padding: 12px;
+    font-size: 14px;
+  }
+}
