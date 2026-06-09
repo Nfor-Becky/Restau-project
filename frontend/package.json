@@ -16,6 +16,8 @@
     "dayjs": "^1.11.20",
     "html5-qrcode": "^2.3.8",
     "jspdf": "^4.2.1",
+    "lodash": "^4.18.1",
+    "lucide-react": "^1.17.0",
     "react": "^19.2.6",
     "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.2.6",
@@ -23,6 +25,7 @@
     "react-qr-code": "^2.0.21",
     "react-router-dom": "^7.15.0",
     "react-toastify": "^11.1.0",
+    "recharts": "^3.8.1",
     "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
