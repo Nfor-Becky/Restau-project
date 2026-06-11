@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "../../App.css";
 
 const Login = () => {
+  const navigate = useNavigate();
+
   const [isLoginMode, setIsLoginMode] = useState(true);
 
   const [name, setName] = useState("");
@@ -30,13 +33,27 @@ const Login = () => {
         }
       );
 
-      localStorage.setItem("userInfo", JSON.stringify(data));
-
-      alert("Login Successful");
+      // Save user info
+      localStorage.setItem(
+        "userInfo",
+        JSON.stringify(data)
+      );
 
       console.log(data);
+
+      // Redirect based on role
+      if (data.role === "student") {
+        window.location.href = "/student/dashboard";
+      } else if (data.role === "staff") {
+        window.location.href = "/staff/dashboard";
+      } else if (data.role === "admin") {
+        window.location.href = "/admin/dashboard";
+      }
     } catch (err) {
-      setError(err.response?.data?.message || "Login Failed");
+      setError(
+        err.response?.data?.message ||
+          "Login Failed"
+      );
     }
 
     setLoading(false);
@@ -47,7 +64,9 @@ const Login = () => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      return setError("Passwords do not match");
+      return setError(
+        "Passwords do not match"
+      );
     }
 
     try {
@@ -76,7 +95,10 @@ const Login = () => {
 
       console.log(data);
     } catch (err) {
-      setError(err.response?.data?.message || "Registration Failed");
+      setError(
+        err.response?.data?.message ||
+          "Registration Failed"
+      );
     }
 
     setLoading(false);
@@ -247,19 +269,6 @@ const Login = () => {
               />
             </div>
 
-            <div className="text-right">
-              <button
-                type="button"
-                className="
-                text-sm
-                text-green-800
-                hover:underline
-              "
-              >
-                Forgot password?
-              </button>
-            </div>
-
             <button
               type="submit"
               className="
@@ -273,7 +282,9 @@ const Login = () => {
               transition
             "
             >
-              {loading ? "Loading..." : "Login"}
+              {loading
+                ? "Loading..."
+                : "Login"}
             </button>
           </form>
         ) : (
@@ -353,7 +364,6 @@ const Login = () => {
           </form>
         )}
 
-        {/* Bottom Text */}
         <p
           className="
           text-center
@@ -379,7 +389,9 @@ const Login = () => {
             hover:underline
           "
           >
-            {isLoginMode ? "Sign Up" : "Login"}
+            {isLoginMode
+              ? "Sign Up"
+              : "Login"}
           </button>
         </p>
       </div>
