@@ -1,7 +1,7 @@
-import AppRoutes from "./routes/AppRoutes";
+import StudentProfile from "./pages/Student/StudentProfile";
 
 function App() {
-  return <AppRoutes />;
+  return <StudentProfile />;
 }
 
 export default App;
