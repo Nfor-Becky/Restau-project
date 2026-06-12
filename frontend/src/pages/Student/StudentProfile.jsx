@@ -280,43 +280,15 @@ const StudentProfile = () => {
                 Monthly Plan
 
               </span>
-
-
-
             </div>
-
-
-
-
-
-
           </div>
-
-
-
-
-
-
-
-
           {/* ACTION BUTTONS */}
-
-
           <div className="
             mt-10
             space-y-5
           ">
-
-
-
-
-
             <button
-
-
               onClick={handlePassword}
-
-
               className="
                 w-full
                 p-4
