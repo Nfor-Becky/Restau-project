@@ -127,7 +127,7 @@ const StudentDashboard = () => {
             {/* QR */}
             <button
               onClick={() =>
-                navigate("/student/qr")
+                navigate("/student/qrcode")
               }
               className="
                 bg-green-50
