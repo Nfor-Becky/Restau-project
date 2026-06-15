@@ -37,7 +37,7 @@ const AppRoutes = () => {
       />
 
       <Route
-        path="/student/qr"
+        path="/student/qrcode"
         element={<QRCodePage />}
       />
 
