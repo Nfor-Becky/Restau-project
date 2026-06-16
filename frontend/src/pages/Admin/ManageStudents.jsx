@@ -9,16 +9,6 @@ const students = [
 ];
 
 const ManageStudents = () => {
-<<<<<<< HEAD
-  return (
-    <div>
-
-    </div>
-  )
-}
-=======
-  const navigate = useNavigate();
->>>>>>> cb23ba6 ( Add admin managestudents page)
 
   return (
     <div className="min-h-screen bg-gray-100 px-4 py-6">
