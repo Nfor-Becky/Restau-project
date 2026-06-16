@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import axios from "axios";
 import { Html5Qrcode } from "html5-qrcode";
 import { useNavigate } from "react-router-dom";
 
@@ -17,7 +18,7 @@ const ScanQRCode = () => {
   const scannerRef = useRef(null);
   const navigate = useNavigate();
 
-  // 🔊 SOUND
+  // SOUND
   const playBeep = (type = "success") => {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const osc = ctx.createOscillator();
@@ -35,7 +36,7 @@ const ScanQRCode = () => {
     osc.stop(ctx.currentTime + 0.15);
   };
 
-  // 📊 FAKE METRICS
+  //  FAKE METRICS
   useEffect(() => {
     const interval = setInterval(() => {
       setMps((p) => Math.min(120, p + Math.floor(Math.random() * 3)));
@@ -44,7 +45,7 @@ const ScanQRCode = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // 📷 INIT CAMERA LIST
+  // INIT CAMERA LIST
   useEffect(() => {
     Html5Qrcode.getCameras()
       .then((devices) => {
@@ -54,7 +55,7 @@ const ScanQRCode = () => {
       .catch(() => {});
   }, []);
 
-  // 🚀 START SCANNER
+  // START SCANNER
   useEffect(() => {
     if (!selectedCam || !isCameraActive) {
       setStatus("off");
@@ -73,7 +74,84 @@ const ScanQRCode = () => {
         fps: 10,
         qrbox: { width: 250, height: 250 },
       },
-      (decodedText) => {
+      (decodedText) => {async (decodedText) => {
+  try {
+    qr.pause(true);
+
+    const userInfo = JSON.parse(
+      localStorage.getItem("userInfo")
+    );
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    const { data } = await axios.post(
+      "http://localhost:5000/api/qr/validate",
+      {
+        token: decodedText,
+      },
+      config
+    );
+
+    const studentData = {
+      name: data.studentName,
+      id: data.studentId,
+      credits: data.remainingCredits,
+      major: data.major || "Student",
+      photo: data.photo || null,
+    };
+
+    setStudent(studentData);
+
+    playBeep("success");
+    setStatus("success");
+    setShowReceipt(true);
+
+    setScanHistory((prev) => [
+      {
+        ...studentData,
+        status: "success",
+        time: new Date().toLocaleTimeString(),
+      },
+      ...prev,
+    ].slice(0, 10));
+
+    setTimeout(() => {
+      setShowReceipt(false);
+      setStatus("scanning");
+      qr.resume();
+    }, 3000);
+  } catch (error) {
+    console.error(error);
+
+    playBeep("error");
+    setStatus("error");
+
+    const historyItem = {
+      name: "Invalid QR",
+      id: "N/A",
+      credits: 0,
+      major: "N/A",
+      status: "error",
+      time: new Date().toLocaleTimeString(),
+    };
+
+    setStudent(historyItem);
+
+    setScanHistory((prev) => [
+      historyItem,
+      ...prev,
+    ].slice(0, 10));
+
+    setTimeout(() => {
+      setStatus("scanning");
+      qr.resume();
+    }, 3000);
+  }
+}
         console.log(decodedText);
 
         let scanResult = "success";
@@ -106,7 +184,7 @@ const ScanQRCode = () => {
           setStatus("error");
           setTimeout(() => setStatus("scanning"), 2000);
         } else {
-          // ✅ Deduct exactly 1 credit logic
+          // Deduct exactly 1 credit logic
           studentData.credits -= 1;
           setStudent(studentData);
 
