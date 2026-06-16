@@ -1,11 +1,14 @@
 import QRToken from "../models/qrTokenModel.js";
 import User from "../models/userModel.js";
+import MealClaim from "../models/mealClaimModel.js";
 import { v4 as uuidv4 } from "uuid";
 
 // Generate QR Code
 const generateQRCode = async (req, res) => {
   try {
-    const student = await User.findById(req.user._id);
+        const student = await User.findById(
+      req.user._id
+    ).populate("selectedMealPlan");
 
     if (!student) {
       return res.status(404).json({
@@ -57,34 +60,52 @@ const validateQRCode = async (req, res) => {
   try {
     const { token } = req.body;
 
-    const qr = await QRToken.findOne({
-      token,
-    });
+    const qr = await QRToken.findOne({ token });
 
     if (!qr) {
       return res.status(400).json({
+        success: false,
         message: "Invalid QR Code",
       });
     }
 
     if (new Date() > qr.expiresAt) {
       return res.status(400).json({
+        success: false,
         message: "QR Code Expired",
       });
     }
 
-    const student = await User.findById(
-      qr.student
-    );
+    const student = await User.findById(qr.student);
 
     if (!student) {
       return res.status(404).json({
+        success: false,
         message: "Student not found",
+      });
+    }
+
+    const today = new Date()
+      .toISOString()
+      .split("T")[0];
+
+    const existingClaim =
+      await MealClaim.findOne({
+        student: student._id,
+        claimDate: today,
+      });
+
+    if (existingClaim) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Student has already claimed meal today",
       });
     }
 
     if (student.mealCredits <= 0) {
       return res.status(400).json({
+        success: false,
         message: "No meal credits available",
       });
     }
@@ -93,15 +114,31 @@ const validateQRCode = async (req, res) => {
 
     await student.save();
 
+    await MealClaim.create({
+      student: student._id,
+      claimDate: today,
+      station: "Point 1",
+      status: "approved",
+    });
+
     await qr.deleteOne();
 
     res.status(200).json({
+      success: true,
       message: "Meal Successfully Claimed",
-      remainingCredits:
-        student.mealCredits,
+
+      student: {
+        _id: student._id,
+        name: student.name,
+        matricNumber:
+          student.matricNumber,
+        mealCredits:
+          student.mealCredits,
+      },
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: error.message,
     });
   }
