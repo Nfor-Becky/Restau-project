@@ -45,9 +45,9 @@ const Login = () => {
       if (data.role === "student") {
         window.location.href = "/student/dashboard";
       } else if (data.role === "staff") {
-        window.location.href = "/staff/dashboard";
+        window.location.href = "/Staff/StaffDashboard";
       } else if (data.role === "admin") {
-        window.location.href = "/admin/dashboard";
+        window.location.href = "/Admin/AdminDashboard";
       }
     } catch (err) {
       setError(

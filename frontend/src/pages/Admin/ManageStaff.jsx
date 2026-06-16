@@ -1,4 +1,4 @@
- import React from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, UserPlus, UserCheck } from "lucide-react";
 
@@ -34,7 +34,10 @@ const ManageStaff = () => {
         <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm">
           <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
             <span className="text-sm font-semibold text-gray-700">Staff Members</span>
-            <button className="inline-flex items-center gap-2 rounded-full bg-green-900 px-4 py-2 text-sm text-white transition hover:bg-green-800">
+            <button
+              onClick={() => navigate("/admin/staff/create")}
+              className="inline-flex items-center gap-2 rounded-full bg-green-900 px-4 py-2 text-sm text-white transition hover:bg-green-800"
+            >
               <UserPlus size={16} /> Add Staff
             </button>
           </div>

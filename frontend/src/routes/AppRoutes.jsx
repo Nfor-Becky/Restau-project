@@ -18,6 +18,7 @@ import ManageStaff from "../pages/Admin/ManageStaff";
 import ManageMealPlans from "../pages/Admin/ManageMealPlans";
 import Reports from "../pages/Admin/Reports";
 import Settings from "../pages/Admin/Settings";
+import CreateStaff from "../pages/Admin/CreateStaff"
 
 const AppRoutes = () => {
   return (
@@ -92,6 +93,10 @@ const AppRoutes = () => {
         path="/Admin/Reports"
         element={<Reports />}
       />
+      <Route 
+        path="/admin/staff/create" 
+        element={<CreateStaff />} 
+        />
 
       <Route
         path="/Admin/Settings"
