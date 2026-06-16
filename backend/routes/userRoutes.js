@@ -9,10 +9,17 @@ import {
 import {
   getUserProfile,
   updateUserProfile,
+  getDashboardData,
 } from "../controllers/userController.js";
 
 router.get("/profile", protect, getUserProfile);
 
 router.put("/profile", protect, updateUserProfile);
+
+router.get(
+  "/dashboard",
+  protect,
+  getDashboardData
+);
 
 export default router;

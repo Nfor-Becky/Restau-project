@@ -1,24 +1,63 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import QRCode from "react-qr-code";
+
 import {
   ArrowLeft,
-  Download,
-  QrCode,
   RefreshCw,
 } from "lucide-react";
 
 const QRCodePage = () => {
   const navigate = useNavigate();
 
+  const [qrData, setQrData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   const userInfo = JSON.parse(
     localStorage.getItem("userInfo")
   );
 
+  const generateQR = async () => {
+    try {
+      setLoading(true);
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      };
+
+      const { data } = await axios.post(
+        "http://localhost:5000/api/qr/generate",
+        {},
+        config
+      );
+
+      setQrData(data);
+    } catch (error) {
+      console.log(error);
+
+      alert(
+        error.response?.data?.message ||
+          "QR Generation Failed"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    generateQR();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-100">
+
       {/* HEADER */}
       <div className="bg-green-900 text-white p-5 rounded-b-3xl shadow-lg">
         <div className="flex items-center gap-3">
+
           <button
             onClick={() =>
               navigate("/student/dashboard")
@@ -30,12 +69,15 @@ const QRCodePage = () => {
           <h1 className="text-xl font-bold">
             Meal QR Code
           </h1>
+
         </div>
       </div>
 
       <div className="max-w-md mx-auto p-4">
+
         {/* STUDENT INFO */}
         <div className="bg-white rounded-2xl shadow-md p-5 mb-5">
+
           <h2 className="text-lg font-bold text-green-900">
             {userInfo?.name}
           </h2>
@@ -45,153 +87,79 @@ const QRCodePage = () => {
           </p>
 
           <p className="text-gray-500 text-sm">
-            Matric Number:
+            Matric:
             {" "}
-            {userInfo?.matricNumber || "N/A"}
+            {userInfo?.matricNumber}
           </p>
+
         </div>
 
         {/* QR CARD */}
         <div className="bg-white rounded-2xl shadow-md p-6 text-center">
-          <div className="flex justify-center">
-            <div
-              className="
-              w-64
-              h-64
-              bg-gray-50
-              border-4
-              border-dashed
-              border-green-900
-              rounded-2xl
-              flex
-              flex-col
-              items-center
-              justify-center
-            "
-            >
-              <QrCode
-                size={120}
-                className="text-green-900"
-              />
 
-              <p className="text-xs text-gray-500 mt-3">
-                QR Preview
+          {loading ? (
+            <h2>Generating QR...</h2>
+          ) : (
+            <>
+              <div className="flex justify-center">
+
+                <QRCode
+                  value={qrData?.token || "empty"}
+                  size={220}
+                />
+
+              </div>
+
+              <h3 className="text-xl font-bold text-green-900 mt-5">
+                Active Meal Pass
+              </h3>
+
+              <p className="text-gray-500 text-sm mt-2">
+                Present this QR code to staff
+                when collecting your meal.
               </p>
-            </div>
-          </div>
 
-          <h3 className="text-xl font-bold text-green-900 mt-5">
-            Active Meal Pass
-          </h3>
+              <div className="bg-green-50 rounded-xl p-3 mt-4">
 
-          <p className="text-gray-500 text-sm mt-2">
-            Present this QR code when collecting
-            your meal.
-          </p>
+                <p className="text-sm text-green-800 font-medium">
+                  Expires:
+                </p>
 
-          <div className="bg-green-50 rounded-xl p-3 mt-4">
-            <p className="text-sm text-green-800 font-medium">
-              QR expires in: 24 Hours
-            </p>
-          </div>
+                <p className="text-sm">
+                  {new Date(
+                    qrData?.expiresAt
+                  ).toLocaleString()}
+                </p>
 
-          {/* BUTTONS */}
-          <div className="grid grid-cols-2 gap-3 mt-5">
-            <button
-              className="
-              bg-green-900
-              text-white
-              py-3
-              rounded-xl
-              flex
-              items-center
-              justify-center
-              gap-2
-              hover:bg-green-800
-              transition
-            "
-            >
-              <Download size={18} />
-              Download
-            </button>
+              </div>
 
-            <button
-              className="
-              border
-              border-green-900
-              text-green-900
-              py-3
-              rounded-xl
-              flex
-              items-center
-              justify-center
-              gap-2
-              hover:bg-green-50
-              transition
-            "
-            >
-              <RefreshCw size={18} />
-              Refresh
-            </button>
-          </div>
+              <button
+                onClick={generateQR}
+                className="
+                  mt-5
+                  border
+                  border-green-900
+                  text-green-900
+                  py-3
+                  px-5
+                  rounded-xl
+                  flex
+                  items-center
+                  justify-center
+                  gap-2
+                  mx-auto
+                "
+              >
+                <RefreshCw size={18} />
+                Refresh QR
+              </button>
+            </>
+          )}
+
         </div>
 
-        {/* MEAL DETAILS */}
-        <div className="bg-white rounded-2xl shadow-md p-5 mt-5">
-          <h3 className="font-bold text-gray-700 mb-4">
-            Meal Information
-          </h3>
-
-          <div className="flex justify-between mb-3">
-            <span className="text-gray-500">
-              Meal Plan
-            </span>
-
-            <span className="font-semibold">
-              Monthly Plan
-            </span>
-          </div>
-
-          <div className="flex justify-between mb-3">
-            <span className="text-gray-500">
-              Credits Remaining
-            </span>
-
-            <span className="font-bold text-green-900">
-              30
-            </span>
-          </div>
-
-          <div className="flex justify-between mb-3">
-            <span className="text-gray-500">
-              Today's Status
-            </span>
-
-            <span className="font-bold text-green-600">
-              Eligible
-            </span>
-          </div>
-
-          <div className="flex justify-between">
-            <span className="text-gray-500">
-              Last Scan
-            </span>
-
-            <span className="font-semibold">
-              Not Used Today
-            </span>
-          </div>
-        </div>
-
-        {/* NOTICE */}
-        <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 mt-5">
-          <p className="text-sm text-yellow-800">
-            ⚠️ This QR code is unique to your account.
-            Sharing it with another student may lead
-            to account suspension.
-          </p>
-        </div>
       </div>
+
     </div>
   );
 };
