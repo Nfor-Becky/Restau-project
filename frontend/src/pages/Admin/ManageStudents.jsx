@@ -1,5 +1,6 @@
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Search } from "lucide-react";
+import { ArrowLeft, Users, Search } from "lucide-react";
 
 const students = [
   { name: "James Nkem", matric: "UB2026134", plan: "Monthly", status: "Active" },
