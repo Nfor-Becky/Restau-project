@@ -53,48 +53,48 @@ const AppRoutes = () => {
 
       {/* Staff */}
       <Route
-        path="/staff/dashboard"
+        path="/Staff/StaffDashboard"
         element={<StaffDashboard />}
       />
 
       <Route
-        path="/staff/scan"
+        path="/Staff/ScanQRCode"
         element={<ScanQRCode />}
       />
 
       <Route
-        path="/staff/profile"
+        path="/Staff/StaffProfile"
         element={<StaffProfile />}
       />
 
       {/* Admin */}
       <Route
-        path="/admin/dashboard"
+        path="/Admin/AdminDashboard"
         element={<AdminDashboard />}
       />
 
       <Route
-        path="/admin/students"
+        path="/Admin/ManageStudents"
         element={<ManageStudents />}
       />
 
       <Route
-        path="/admin/staff"
+        path="/Admin/ManageStaff"
         element={<ManageStaff />}
       />
 
       <Route
-        path="/admin/mealplans"
+        path="/Admin/ManageMealPlans"
         element={<ManageMealPlans />}
       />
 
       <Route
-        path="/admin/reports"
+        path="/Admin/Reports"
         element={<Reports />}
       />
 
       <Route
-        path="/admin/settings"
+        path="/Admin/Settings"
         element={<Settings />}
       />
     </Routes>
