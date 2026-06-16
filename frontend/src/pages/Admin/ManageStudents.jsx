@@ -9,6 +9,7 @@ const students = [
 ];
 
 const ManageStudents = () => {
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gray-100 px-4 py-6">

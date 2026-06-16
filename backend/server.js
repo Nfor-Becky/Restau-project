@@ -15,9 +15,6 @@ import adminRoutes from "./routes/adminRoutes.js";
 
 dotenv.config();
 
-// Connect Database
-connectDB();
-
 const app = express();
 
 // Middleware
@@ -59,6 +56,14 @@ app.use((req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// Connect Database and then start server
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log("Database connected successfully.");
+  });
+}).catch(err => {
+  console.error("CRITICAL ERROR: Could not connect to MongoDB.");
+  console.error(err.message);
+  process.exit(1);
 });
