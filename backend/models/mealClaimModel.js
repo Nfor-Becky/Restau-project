@@ -4,7 +4,7 @@ const mealClaimSchema = new mongoose.Schema(
   {
     student: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Student",
+      ref: "User",
       required: true,
     },
 
@@ -40,6 +40,9 @@ mealClaimSchema.index(
   { unique: true }
 );
 
-const MealClaim = mongoose.model("MealClaim", mealClaimSchema);
+const MealClaim = mongoose.model(
+  "MealClaim",
+  mealClaimSchema
+);
 
 export default MealClaim;

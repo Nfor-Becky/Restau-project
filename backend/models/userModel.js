@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema(
+const userSchema = mongoose.Schema(
   {
     name: {
       type: String,
@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema(
 
     matricNumber: {
       type: String,
+      required: true,
     },
 
     password: {
@@ -24,8 +25,17 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ["student", "staff", "admin"],
       default: "student",
+    },
+
+    selectedMealPlan: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "MealPlan",
+    },
+
+    mealCredits: {
+      type: Number,
+      default: 0,
     },
   },
   {

@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
 import {
   QrCode,
   History,
@@ -16,10 +18,55 @@ const StudentDashboard = () => {
     localStorage.getItem("userInfo")
   );
 
+  const [dashboardData, setDashboardData] =
+    useState(null);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${userInfo?.token}`,
+          },
+        };
+
+        const { data } = await axios.get(
+          "http://localhost:5000/api/users/dashboard",
+          config
+        );
+
+        setDashboardData(data);
+      } catch (error) {
+        console.log(
+          error.response?.data || error.message
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (userInfo?.token) {
+      fetchDashboard();
+    } else {
+      setLoading(false);
+    }
+  }, []);
+
   const logoutHandler = () => {
     localStorage.removeItem("userInfo");
     navigate("/");
   };
+
+  if (loading) {
+    return (
+      <h2 className="text-center mt-10 text-xl">
+        Loading...
+      </h2>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -32,20 +79,22 @@ const StudentDashboard = () => {
             </h1>
 
             <p className="text-green-100 mt-2">
-              Welcome back,
+              Welcome Back,
             </p>
 
             <h2 className="text-lg font-semibold">
-              {userInfo?.name || "Student"}
+              {dashboardData?.name ||
+                userInfo?.name ||
+                "Student"}
             </h2>
 
             <p className="text-green-200 text-sm">
-              {userInfo?.matricNumber ||
-                "UB2025001"}
+              {dashboardData?.matricNumber ||
+                userInfo?.matricNumber ||
+                "N/A"}
             </p>
           </div>
 
-          {/* Logout */}
           <button
             onClick={logoutHandler}
             className="
@@ -57,10 +106,7 @@ const StudentDashboard = () => {
               flex
               items-center
               gap-2
-              text-sm
               font-semibold
-              hover:bg-red-50
-              transition
             "
           >
             <LogOut size={18} />
@@ -69,201 +115,116 @@ const StudentDashboard = () => {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto p-4 md:p-6">
+      <div className="max-w-6xl mx-auto p-4">
         {/* TOP CARDS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="grid md:grid-cols-2 gap-4 mb-6">
           {/* Credits */}
-          <div className="bg-white rounded-2xl p-5 shadow">
+          <div className="bg-white p-5 rounded-2xl shadow">
             <div className="flex justify-between items-center">
-              <h3 className="text-gray-600 font-medium">
+              <h3 className="font-medium">
                 Meal Credits
               </h3>
 
-              <CreditCard
-                size={24}
-                className="text-green-900"
-              />
+              <CreditCard />
             </div>
 
             <h1 className="text-4xl font-bold text-green-900 mt-3">
-              30
+              {dashboardData?.credits ?? 0}
             </h1>
 
-            <p className="text-gray-500 text-sm mt-1">
+            <p className="text-sm text-gray-500">
               Remaining Credits
             </p>
           </div>
 
           {/* Meal Plan */}
-          <div className="bg-white rounded-2xl p-5 shadow">
+          <div className="bg-white p-5 rounded-2xl shadow">
             <div className="flex justify-between items-center">
-              <h3 className="text-gray-600 font-medium">
+              <h3 className="font-medium">
                 Active Meal Plan
               </h3>
 
-              <ClipboardList
-                size={24}
-                className="text-green-900"
-              />
+              <ClipboardList />
             </div>
 
             <h1 className="text-2xl font-bold text-green-900 mt-3">
-              Standard Plan
+              {dashboardData?.mealPlan ||
+                "No Plan"}
             </h1>
-
-            <p className="text-gray-500 text-sm mt-1">
-              3 Meals Per Day
-            </p>
           </div>
         </div>
 
         {/* QUICK ACTIONS */}
-        <div className="bg-white rounded-2xl p-5 shadow">
-          <h2 className="text-lg font-bold mb-4 text-green-900">
+        <div className="bg-white rounded-2xl shadow p-5">
+          <h2 className="font-bold text-lg mb-4 text-green-900">
             Quick Actions
           </h2>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {/* QR */}
             <button
               onClick={() =>
                 navigate("/student/qrcode")
               }
-              className="
-                bg-green-50
-                hover:bg-green-100
-                rounded-xl
-                p-4
-                transition
-                flex
-                flex-col
-                items-center
-              "
+              className="bg-green-50 p-4 rounded-xl flex flex-col items-center hover:bg-green-100"
             >
-              <QrCode
-                size={30}
-                className="text-green-900"
-              />
-
-              <span className="mt-2 text-sm font-medium">
-                QR Code
-              </span>
+              <QrCode size={30} />
+              <span>QR Code</span>
             </button>
 
-            {/* Meal Plan */}
             <button
               onClick={() =>
                 navigate("/student/mealplans")
               }
-              className="
-                bg-green-50
-                hover:bg-green-100
-                rounded-xl
-                p-4
-                transition
-                flex
-                flex-col
-                items-center
-              "
+              className="bg-green-50 p-4 rounded-xl flex flex-col items-center hover:bg-green-100"
             >
-              <ClipboardList
-                size={30}
-                className="text-green-900"
-              />
-
-              <span className="mt-2 text-sm font-medium">
-                Meal Plan
-              </span>
+              <ClipboardList size={30} />
+              <span>Meal Plan</span>
             </button>
 
-            {/* History */}
             <button
               onClick={() =>
                 navigate("/student/history")
               }
-              className="
-                bg-green-50
-                hover:bg-green-100
-                rounded-xl
-                p-4
-                transition
-                flex
-                flex-col
-                items-center
-              "
+              className="bg-green-50 p-4 rounded-xl flex flex-col items-center hover:bg-green-100"
             >
-              <History
-                size={30}
-                className="text-green-900"
-              />
-
-              <span className="mt-2 text-sm font-medium">
-                History
-              </span>
+              <History size={30} />
+              <span>History</span>
             </button>
 
-            {/* Profile */}
             <button
               onClick={() =>
                 navigate("/student/profile")
               }
-              className="
-                bg-green-50
-                hover:bg-green-100
-                rounded-xl
-                p-4
-                transition
-                flex
-                flex-col
-                items-center
-              "
+              className="bg-green-50 p-4 rounded-xl flex flex-col items-center hover:bg-green-100"
             >
-              <User
-                size={30}
-                className="text-green-900"
-              />
-
-              <span className="mt-2 text-sm font-medium">
-                Profile
-              </span>
+              <User size={30} />
+              <span>Profile</span>
             </button>
           </div>
         </div>
 
         {/* RECENT ACTIVITY */}
-        <div className="bg-white rounded-2xl p-5 shadow mt-6">
-          <h2 className="text-lg font-bold mb-3 text-green-900">
+        <div className="bg-white rounded-2xl shadow p-5 mt-6">
+          <h2 className="font-bold text-lg mb-4 text-green-900">
             Recent Activity
           </h2>
 
-          <div className="space-y-3">
-            <div className="border-b pb-2">
-              <p className="font-medium">
-                Breakfast Claimed
-              </p>
-              <p className="text-sm text-gray-500">
-                Today - 7:45 AM
-              </p>
-            </div>
-
-            <div className="border-b pb-2">
-              <p className="font-medium">
-                Lunch Claimed
-              </p>
-              <p className="text-sm text-gray-500">
-                Yesterday - 12:15 PM
-              </p>
-            </div>
-
-            <div>
-              <p className="font-medium">
-                Meal Plan Activated
-              </p>
-              <p className="text-sm text-gray-500">
-                2 Days Ago
-              </p>
-            </div>
-          </div>
+          {dashboardData?.recentClaims?.length >
+          0 ? (
+            dashboardData.recentClaims.map(
+              (claim) => (
+                <div
+                  key={claim._id}
+                  className="border-b py-2"
+                >
+                  Meal Claimed -{" "}
+                  {claim.claimDate}
+                </div>
+              )
+            )
+          ) : (
+            <p>No activity found</p>
+          )}
         </div>
       </div>
     </div>

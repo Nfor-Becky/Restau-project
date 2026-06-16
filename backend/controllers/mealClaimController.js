@@ -1,13 +1,39 @@
+import MealClaim from "../models/mealClaimModel.js";
+
+
+// STUDENT HISTORY
 const getMyMealHistory = async (req, res) => {
-  res.json({
-    message: "Get My Meal History",
-  });
+  try {
+    const claims = await MealClaim.find({
+      student: req.user._id,
+    })
+      .sort({ createdAt: -1 });
+
+    res.json(claims);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
 };
 
+
+// ADMIN HISTORY
 const getAllMealClaims = async (req, res) => {
-  res.json({
-    message: "Get All Meal Claims",
-  });
+  try {
+    const claims = await MealClaim.find({})
+      .populate(
+        "student",
+        "name email matricNumber"
+      )
+      .sort({ createdAt: -1 });
+
+    res.json(claims);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
 };
 
 export {
