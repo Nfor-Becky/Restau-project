@@ -129,7 +129,7 @@ const StudentDashboard = () => {
             </div>
 
             <h1 className="text-4xl font-bold text-green-900 mt-3">
-              {dashboardData?.mealCredits ?? 0}
+              {dashboardData?.credits ?? 0}
             </h1>
 
             <p className="text-sm text-gray-500">
